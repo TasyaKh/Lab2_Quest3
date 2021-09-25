@@ -4,29 +4,28 @@ namespace Lab_2_For_Lab_3
 {
     class Logic
     {
-        private int sum;      //Хранит сумму элементов
-        private int?[] keepAllExpress; //
-        private int positKeeper; //
+        private int? sum;              //Хранит сумму элементов
+        private int?[] keepAllExpress; //Содержит суммы нескольких найденных выражений
+        private int countNumExpressions;       //Содержит текущую позицию массива, который содежит суммы
 
-        private int leftNum;  //Хранит левый номер
-        private int rightNum; //Хранит правый номер
-        private bool leftExist; //Сужествует ли левый номер
-        private bool rightExist; //Сужествует ли левый номер
-        private char saveSign; //Определен ли знак
+        private int leftNum;           //Хранит левый номер
+        private int rightNum;          //Хранит правый номер
+
+        private bool leftExist;        //Сужествует ли левый номер
+        private char saveSign;         //Определен ли знак
 
         public Logic()
         {
-            sum = 0;
+            sum = null;
             keepAllExpress = new int?[5];
-            positKeeper = 0;
+            countNumExpressions = 0;
 
             leftNum = 0;
             rightNum = 0;
             leftExist = false;
-            rightExist = true;
             saveSign = '?';
         }
-        private int summa(char sign, int leftNum, int rightNum) //Найти сумму левый+-правый элементы
+        private int? summa(char sign, int leftNum, int rightNum) //Найти сумму левый+-правый элементы
         {
             int result = 0;
 
@@ -48,15 +47,16 @@ namespace Lab_2_For_Lab_3
 
             for (int i = posit; i < express.Length; i++, posit++)
             {
-                if (Char.IsDigit(express[i])) //Определить является ли символ номером
+                if (Char.IsDigit(express[i]))             //Определить является ли символ номером
                     number = number * 10 + Convert.ToInt32(express[i].ToString()); //Если да, то сохранить цифру
-                else //Если не номер,то
+                else                                     //Если не номер,то
                 {
-                    posit--; //Вычитаем шаг проверки на одну позицию, чтобы проверить в последующем не является ли этот шаг пробелом или знаком +-
-                    break;   //Завершаем сбор цифры 
+                    break;                                //Завершаем сбор цифры 
                 }
 
             }
+            posit--;//Вычитаем шаг проверки на одну позицию, чтобы проверить в последующем не является ли этот шаг пробелом или знаком +-
+
             return number;
         }
 
@@ -69,58 +69,67 @@ namespace Lab_2_For_Lab_3
             return false;
         }
 
-        private void rewriteLeft()//Обнулить выражение: левое, правое значения и знак +- и найти сумму
+        private void rewriteLeft()      //Обнулить выражение: левое, правое значения и знак +- и найти сумму
         {
-            // Console.WriteLine("here");
-
-            leftNum = sum; //Теперь левое значение равно выражению справа
+            leftNum = (int)sum;              //Теперь левое значение равно выражению справа
             saveSign = '?';
             rightNum = 0;
-            //rightExist = false;
 
         }
         private void resetAll()
         {
             leftNum = rightNum = 0;
-            leftExist = rightExist = false;
+            leftExist = false;
             saveSign = '?';
         }
 
-        public void checkWord(String express, ref int i) //Проверить слово на наличие выражения(выражение, позиция с которой ищем)
+        public void checkWord(String express, ref int i)           //Проверить слово на наличие выражения(выражение, позиция с которой ищем)
         {//Тип string нужен, чтобы учесть номера вида 20, 300 и т.д, т.е те, которые содержать более одной цифры
-            if (Char.IsDigit(express[i]))               //Если цифра найдена, то
+            if (Char.IsDigit(express[i]))                          //Если цифра найдена, то
             {
-                if (leftExist && !saveSign.Equals('?'))  //Если левое значение существует и найден знак +-, то находим правую цифру
+                if (leftExist && !saveSign.Equals('?'))            //Если левое значение существует и найден знак +-, то находим правую цифру
                 {
-                    rightExist = true;
+                    rightNum = getNum(express, ref i);             //Собрать правую цифру
 
-                    rightNum = getNum(express, ref i);
+                    sum = summa(saveSign, leftNum, rightNum);      //Получаем сумму найденного выражения
+                    rewriteLeft();                                 //Обнуляем правую цифру и знак
 
-                    sum = summa(saveSign, leftNum, rightNum);//Получаем сумму найденного выражения
-                    rewriteLeft();                                 // обнуляем правую цифру и знак
-                    keepAllExpress[positKeeper] = sum;
+                    if (countNumExpressions < keepAllExpress.Length)      //Если количество найденных выражений < размера этого массива, то
+                        keepAllExpress[countNumExpressions] = sum;        //сохраняем текущую найденную сумму выражения
+                    else keepAllExpress[keepAllExpress.Length - 1] = sum; //Если выражений слишком много, то заменяем последний элемент на найденное последнее выражение
+                    
+
+                    if (i + 1 == express.Length)                   //Если это конец, учесть последнее выражение
+                        countNumExpressions++;    
+                    //sum = null;
                 }
-                else if (!leftExist)                 //Если левой цифры нет, то находим левую
+                else if (!leftExist)                               //Если левой цифры нет, то находим левую
                 {
                     leftNum = getNum(express, ref i);
                     leftExist = true;
                     //Console.WriteLine(" leftNum: " + leftNum);
                 }
             }
-            else if (isSign(express[i]))//Если знак+-,то
+            else if (saveSign.Equals('?') && leftExist && isSign(express[i]))          //Если знак+- и, если он не найден и левое значение существует
             {
                 saveSign = express[i];
             }
-            else         //Если знак не+- ,не цифра,то обнуляем собранные значения
+            else                                              //Если знак не+- ,не цифра,то обнуляем собранные значения
             {
-                if (rightExist && positKeeper<keepAllExpress.Length - 1) positKeeper++;//Если правое значение существует, это говорит о том,
-                resetAll();                                     // что знак и левое тоже существую, а значит сумма была произведена
+                if(sum.HasValue)countNumExpressions++;        //Если сумма существует, значит, увеличиваем счетчик выражений                                             
+                sum = null;
+                resetAll();                                   //Обнуляем все значения(лево, право и знак)
             }
         }
 
         public int?[] getSumAll()//Получить сумму
         {
             return keepAllExpress;
+        }
+        
+        public int getNumsExpressions() //Получить позицию массива, который содержит найденные суммы
+        {
+            return countNumExpressions;
         }
     }
 }
