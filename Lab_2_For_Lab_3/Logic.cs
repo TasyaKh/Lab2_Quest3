@@ -2,7 +2,7 @@
 
 namespace Lab_2_For_Lab_3
 {
-    class Logic
+    public class Logic
     {
         private int? sum;              //Хранит сумму элементов
         private int?[] keepAllExpress; //Содержит суммы нескольких найденных выражений
@@ -13,11 +13,14 @@ namespace Lab_2_For_Lab_3
 
         private bool leftExist;        //Сужествует ли левый номер
         private char saveSign;         //Определен ли знак
+        private int lengthKeepExpress;
 
-        public Logic()
+        public Logic(int expressionsSave) //(Количество сохраняемых найденых выражений)
         {
+            this.lengthKeepExpress = expressionsSave;
+
             sum = null;
-            keepAllExpress = new int?[5];
+            keepAllExpress = new int?[expressionsSave];
             countNumExpressions = 0;
 
             leftNum = 0;
@@ -126,7 +129,21 @@ namespace Lab_2_For_Lab_3
         {
             return keepAllExpress;
         }
-        
+
+        public string getOutputArr()
+        {
+            string elems = "";
+            for(int i = 0; i < keepAllExpress.Length; i++)
+            {
+                if (i == keepAllExpress.Length - 1 && getNumsExpressions() > keepAllExpress.Length)
+                    elems += "...";                //Если количество выражений велико, то пишем такой знак
+                if (keepAllExpress[i].HasValue)                  //Т.к этот массив содержит ограниченное количество элементов, то
+                    elems += keepAllExpress[i];           // нам нужно проверить наличие этих элементов(может быть и null значение)
+                if (i + 1 < keepAllExpress.Length && keepAllExpress[i + 1].HasValue) elems += ", "; //Чтобы не было лишних запятых
+
+            }
+            return elems;
+        }
         public int getNumsExpressions() //Получить позицию массива, который содержит найденные суммы
         {
             return countNumExpressions;

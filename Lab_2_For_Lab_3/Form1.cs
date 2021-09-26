@@ -22,21 +22,19 @@ namespace Lab_2_For_Lab_3
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Logic logic = new Logic();
+            Logic logic = new Logic(5);
 
             label3.Text = "";                         //Этот лейбл выводит полученные суммы нескольких выражений
             startChecking(logic);                     //Начать проверку слова
 
             int?[] sumAll = logic.getSumAll();        //Получить найденне суммы
 
-            for (int i = 0; i < sumAll.Length; i++)
-            {
-                if (i == sumAll.Length - 1 && logic.getNumsExpressions() > sumAll.Length)
-                    label3.Text += " ...";                //Если количество выражений велико, то пишем такой знак
-                if (sumAll[i].HasValue)                  //Т.к этот массив содержит ограниченное количество элементов, то
-                    label3.Text += sumAll[i];           // нам нужно проверить наличие этих элементов(может быть и null значение)
-                if (i + 1 < sumAll.Length && sumAll[i + 1].HasValue) label3.Text += ", "; //Чтобы не было лишних запятых
-            }
+            label3.Text = logic.getOutputArr();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
