@@ -1,10 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Lab_2_For_Lab_3;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Lab_2_For_Lab_3.Tests
 {
@@ -12,16 +6,11 @@ namespace Lab_2_For_Lab_3.Tests
     public class LogicTests
     {
         private const int expressionsSave = 5;
-        private void checkMethod(Logic logic,string txt)  //Подает на проверку каждый символ в предложении классу Logic
-        {
-            for (int i = 0; i < txt.Length; i++)
-                logic.checkWord(txt, ref i);
-        }
 
         [TestMethod()]
         public void WitoutLeftNumberTest() //Без левой цифры
         {
-            Logic logic = new Logic(expressionsSave);
+            Logic logic = new Logic();
 
             string txt = "+9";            //Текст, который надо проверить
             string answer = "";           //На выходе не будет элементов

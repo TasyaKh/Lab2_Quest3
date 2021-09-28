@@ -8,33 +8,26 @@ namespace Lab_2_For_Lab_3
         public Form1()
         {
             InitializeComponent();
-        }
-
-        private void startChecking(Logic logic)
-        {
-            string txt = textBox1.Text;                //Получем текст с бокса
-
-            for (int i = 0; i < txt.Length; i++)       //Проверяем каждый символ в этом тексте
-            {
-                logic.checkWord(textBox1.Text, ref i); //Вызываем метод проверки этого символа
-            }
+            textBox1.Text = Properties.Settings.Default.Text;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Logic logic = new Logic(5);
+            label3.Text = "";                                   //Этот лейбл выводит полученную сумму
 
-            label3.Text = "";                         //Этот лейбл выводит полученные суммы нескольких выражений
-            startChecking(logic);                     //Начать проверку слова
+            Logic logic = new Logic();
+            string msgError = "";
+                                 
+            msgError = logic.startChecking(textBox1.Text);       //Начать поиск
 
-            int?[] sumAll = logic.getSumAll();        //Получить найденне суммы
-
-            label3.Text = logic.getOutputArr();
+            if (msgError != "") MessageBox.Show(msgError);
+            else
+            {
+                label3.Text = Convert.ToString(logic.getSum());
+                Properties.Settings.Default.Text = textBox1.Text;
+                Properties.Settings.Default.Save();
+            }  
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
     }
 }
